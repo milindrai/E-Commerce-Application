@@ -1,2 +1,51 @@
+# Node modules
 node_modules/
+
+# Dependency directories
+bower_components/
+
+# Environment variables
 .env
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build directories
+dist/
+build/
+
+# Docker
+docker-compose.override.yml
+*.dockerignore
+
+# VS Code
+.vscode/
+
+# MacOS
+.DS_Store
+
+# IDE specific files
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Runtime files
+pids/
+*.pid
+
+# NPM cache
+.npm
+
+# Yarn cache
+.yarn/
+
+# ESLint
+.eslintcache
+
+# Optional: Any other files you want to ignore

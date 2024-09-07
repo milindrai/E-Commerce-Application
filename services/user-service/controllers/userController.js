@@ -23,7 +23,6 @@ const registerUser=async(req,res)=>{
         // Generate JWT token
         const token=jwt.sign({userId:user._id},process.env.JWT_SECRET);
 
-        // Store the token in a cookie
         res.cookie('token', token, {
             httpOnly: true, // The cookie is only accessible by the web server
             secure: process.env.NODE_ENV === 'production', // Use secure cookies in production environment
@@ -66,12 +65,13 @@ const logoutUser=async(req,res)=>{
 }
 
 const getUser = async (req, res) => {
-    const {email}=req.body;
     try {
-        let user=await User.findOne({email}).select('-password');
+        const user = await User.findById(req.user.userId).select('-password');
+        
         if (!user) {
             return res.status(404).send('User not found');
         }
+        
         res.json(user);
     } catch (err) {
         console.error(err.message);
@@ -81,19 +81,17 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { name, email } = req.body;
+    
     try {
-        // Ensure the user exists
-        let user = await User.findById(req.user.userId); // Note: Using req.user.userId
+        let user = await User.findById(req.user.userId); 
         if (!user) {
             return res.status(404).send('User not found');
         }
 
-        // Update user details
         user.name = name || user.name;
         user.email = email || user.email;
         await user.save();
 
-        // Return updated user details without the password
         const updatedUser = await User.findById(req.user.userId).select('-password');
         res.json(updatedUser);
     } catch (err) {
@@ -101,5 +99,6 @@ const updateUser = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
 
 module.exports={registerUser,loginUser,logoutUser,getUser,updateUser};

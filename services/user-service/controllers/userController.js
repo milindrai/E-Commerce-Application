@@ -2,6 +2,7 @@ const User=require('../models/User');
 const bcrypt = require('bcryptjs');
 const env=require('dotenv');
 const jwt=require('jsonwebtoken');
+const authMiddleware=require('../middleware/authenticate');
 
 const registerUser=async(req,res)=>{
     const {name,email,password}=req.body;
@@ -28,7 +29,7 @@ const registerUser=async(req,res)=>{
             secure: process.env.NODE_ENV === 'production', // Use secure cookies in production environment
             sameSite: 'strict', // Strictly same site
         });
-        
+
         res.status(201).json({message:'User registered successfully'});
     }
     catch(err){
@@ -59,6 +60,46 @@ const loginUser=async(req,res)=>{
     }
 }
 
+const logoutUser=async(req,res)=>{
+    res.clearCookie('token');
+    res.json({message:'Logout successful'});
+}
 
+const getUser = async (req, res) => {
+    const {email}=req.body;
+    try {
+        let user=await User.findOne({email});
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+        res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+};
 
-module.exports={registerUser,loginUser};
+const updateUser = async (req, res) => {
+    const { name, email } = req.body;
+    try {
+        // Ensure the user exists
+        let user = await User.findById(req.user.userId); // Note: Using req.user.userId
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Update user details
+        user.name = name || user.name;
+        user.email = email || user.email;
+        await user.save();
+
+        // Return updated user details without the password
+        const updatedUser = await User.findById(req.user.userId).select('-password');
+        res.json(updatedUser);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+};
+
+module.exports={registerUser,loginUser,logoutUser,getUser,updateUser};

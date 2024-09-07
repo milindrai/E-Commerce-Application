@@ -1,43 +1,16 @@
 version: '3'
 services:
   user-service:
-    build: ./services/user-service
+    build:
+      context: ./services/user-service
     ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
+      - "5001:5000"
+    env_file:
+      - .env
+    depends_on:
+      - mongo
     
-  product-service:
-    build: ./services/product-catalog-service
+  mongo:
+    image: mongo:latest
     ports:
-      - "3001:3001"
-    environment:
-      - NODE_ENV=development
-
-  shopping-cart-service:
-    build: ./services/shopping-cart-service
-    ports:
-      - "3002:3002"
-    environment:
-      - NODE_ENV=development
-
-  order-service:
-    build: ./services/order-service
-    ports:
-      - "3003:3003"
-    environment:
-      - NODE_ENV=development
-
-  payment-service:
-    build: ./services/payment-service
-    ports:
-      - "3004:3004"
-    environment:
-      - NODE_ENV=development
-
-  notification-service:
-    build: ./services/notification-service
-    ports:
-      - "3005:3005"
-    environment:
-      - NODE_ENV=development
+      - "27017:27017"

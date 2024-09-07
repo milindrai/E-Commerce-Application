@@ -68,7 +68,7 @@ const logoutUser=async(req,res)=>{
 const getUser = async (req, res) => {
     const {email}=req.body;
     try {
-        let user=await User.findOne({email});
+        let user=await User.findOne({email}).select('-password');
         if (!user) {
             return res.status(404).send('User not found');
         }

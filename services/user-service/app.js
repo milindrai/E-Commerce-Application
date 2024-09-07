@@ -8,7 +8,7 @@ const app=express();
 
 app.use(express.json());
 
-mongoose.connect(process.env.DB_URI,{useUrlParser:true,unifiedTopology:true})
+mongoose.connect(process.env.DB_URI)
     .then(()=>console.log('Database connected'))
     .catch(err=>console.error('Database connection error',err));
 

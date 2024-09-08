@@ -79,4 +79,52 @@ const searchProduct = async (req, res) => {
     }
 };
 
-module.exports={createProduct,getProducts,updateDetails,deleteProduct,searchProduct};
+const addReview=async (req,res)=>{
+    try{
+        const product=await Product.findById(req.params.id);
+        if(!product){
+            return res.status(404).json({message:'Product not found'});
+        }
+        const review=req.body;
+        product.reviews.push(review);
+        await product.save();
+        res.status(200).json(product);
+    }
+    catch(err){
+        res.status(500).json({error:err.message});
+    }
+}
+
+const getReviews=async (req,res)=>{
+    try{
+        const product=await Product.findById(req.params.id);
+        if(!product){
+            return res.status(404).json({message:'Product not found'});
+        }
+        res.status(200).json(product.reviews);
+    }
+    catch(err){
+        res.status(500).json({error:err.message});
+    }
+}
+
+const deleteReview = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        // Assuming `reviewId` is passed as a parameter in the request URL
+        const reviewId = req.params.reviewId;
+        // Filter out the review to delete
+        product.reviews = product.reviews.filter(r => r._id.toString() !== reviewId);
+        await product.save();
+        res.status(200).json(product);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+
+
+module.exports={createProduct,getProducts,updateDetails,deleteProduct,searchProduct,addReview,getReviews,deleteReview};

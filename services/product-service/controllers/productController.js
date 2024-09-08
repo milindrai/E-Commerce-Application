@@ -34,6 +34,7 @@ const updateDetails=async (req,res)=>{
         product.description=description || product.description;
         product.price=price || product.price;
         product.category=category || product.category;
+        product.quantity=quantity || product.quantity;
         await product.save();
         res.status(200).json(product);
     }
@@ -77,7 +78,19 @@ const searchProduct = async (req, res) => {
         const products = await Product.find({
             $or: queryConditions.length > 0 ? queryConditions : [{}]
         });
-        res.status(200).json(products);
+
+        // Add availability information
+        const productsWithAvailability = products.map(product => {
+            const isAvailable = product.quantity > 0;
+            const availabilityText = `Only ${product.quantity} product(s) left`;
+            return {
+                ...product.toObject(), // Convert Mongoose document to plain JavaScript object
+                isAvailable,
+                availabilityText: isAvailable ? availabilityText : 'Out of stock'
+            };
+        });
+
+        res.status(200).json(productsWithAvailability);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -191,4 +204,20 @@ const deleteProductImage = async (req, res) => {
     }
 };
 
-module.exports={createProduct,getProducts,updateDetails,deleteProduct,searchProduct,addReview,getReviews,deleteReview,uploadProductImage,upload,getProductImage,deleteProductImage};
+const updateStock =async(req,res)=>{
+    try{
+        const product=await Product.findById(req.params.productId);
+        if(!product){
+            return res.status(404).json({message:'Product not found'});
+        }
+        const {quantity}=req.body;
+        product.quantity=quantity;
+        await product.save();
+        res.status(200).json(product);
+    }
+    catch(err){
+        res.status(500).json({error:err.message});
+    }
+}
+
+module.exports={createProduct,getProducts,updateDetails,deleteProduct,searchProduct,addReview,getReviews,deleteReview,uploadProductImage,upload,getProductImage,deleteProductImage,updateStock};

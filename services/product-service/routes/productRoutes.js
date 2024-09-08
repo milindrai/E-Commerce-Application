@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {createProduct, getProducts, updateDetails, deleteProduct, searchProduct, addReview, getReviews, deleteReview,upload,uploadProductImage, getProductImage, deleteProductImage} = require('../controllers/productController');
+const {createProduct, getProducts, updateDetails, deleteProduct, searchProduct, addReview, getReviews, deleteReview,upload,uploadProductImage, getProductImage, deleteProductImage, updateStock} = require('../controllers/productController');
 const authenticate = require('../middleware/authenticate');
 
 
@@ -15,5 +15,6 @@ router.delete('/:productId/reviews/:reviewId', authenticate,deleteReview);
 router.post('/:productId/image', upload.single('image'), authenticate,uploadProductImage);
 router.get('/:productId/image',authenticate, getProductImage);
 router.delete('/:productId/image',authenticate, deleteProductImage);
+router.patch('/:productId/stock/update',authenticate,updateStock);
 
 module.exports = router;

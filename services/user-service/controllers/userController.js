@@ -50,6 +50,11 @@ const loginUser=async(req,res)=>{
             return res.status(400).json({message:'Invalid email or password'});
         }
         const token=jwt.sign({userId:user._id},process.env.JWT_SECRET);
+        res.cookie('token', token, {
+            httpOnly: true, // The cookie is only accessible by the web server
+            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production environment
+            sameSite: 'strict', // Strictly same site
+        });
         res.json({message:'Login successful'});
         
     }

@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const productController = require('../controllers/productController');
+const {createProduct, getProducts, updateDetails} = require('../controllers/productController');
 
-router.post('/create', productController.createProduct);
-router.get('/details', productController.getProducts);
+router.post('/create',createProduct);
+router.get('/details', getProducts);
+router.put('/update/:id', updateDetails);
 
 // Add other routes as needed
 

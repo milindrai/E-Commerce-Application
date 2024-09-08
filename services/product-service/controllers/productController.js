@@ -2,6 +2,7 @@ const Product = require('../models/Product');
 const multer = require('multer');
 const path = require('path');
 const sharp = require('sharp');
+const fs = require('fs');
 
 const createProduct = async (req, res) => {
     try {
@@ -171,4 +172,23 @@ const getProductImage = async (req, res) => {
     }
 };
 
-module.exports={createProduct,getProducts,updateDetails,deleteProduct,searchProduct,addReview,getReviews,deleteReview,uploadProductImage,upload,getProductImage};
+const deleteProductImage = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        if (!product.image) {
+            return res.status(404).json({ message: 'Image not found for the product' });
+        }
+        fs.unlinkSync(product.image);
+        product.image = null;
+        await product.save();
+        res.json({ message: 'Image deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete image' });
+    }
+};
+
+module.exports={createProduct,getProducts,updateDetails,deleteProduct,searchProduct,addReview,getReviews,deleteReview,uploadProductImage,upload,getProductImage,deleteProductImage};

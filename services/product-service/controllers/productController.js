@@ -1,6 +1,7 @@
 const Product = require('../models/Product');
 const multer = require('multer');
 const path = require('path');
+const sharp = require('sharp');
 
 const createProduct = async (req, res) => {
     try {

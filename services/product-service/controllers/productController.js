@@ -1,4 +1,6 @@
 const Product = require('../models/Product');
+const multer = require('multer');
+const path = require('path');
 
 const createProduct = async (req, res) => {
     try {
@@ -125,6 +127,47 @@ const deleteReview = async (req, res) => {
     }
 }
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, '/Users/Milind2/Desktop/basic'); // specify the folder to save images
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // save with unique name
+    },
+});
 
+const upload = multer({ storage: storage });
 
-module.exports={createProduct,getProducts,updateDetails,deleteProduct,searchProduct,addReview,getReviews,deleteReview};
+const uploadProductImage = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const imagePath = req.file.path;
+
+        // Logic to associate image path with the product in the database
+        const product = await Product.findById(productId);
+        product.image = imagePath;
+        await product.save();
+
+        res.json({ message: 'Image uploaded successfully', imagePath });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to upload image' });
+    }
+};
+
+const getProductImage = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        if (!product.image) {
+            return res.status(404).json({ message: 'Image not found for the product' });
+        }
+        res.sendFile(product.image);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch image' });
+    }
+};
+
+module.exports={createProduct,getProducts,updateDetails,deleteProduct,searchProduct,addReview,getReviews,deleteReview,uploadProductImage,upload,getProductImage};

@@ -4,8 +4,12 @@ const app = express();
 const productRoutes = require('./routes/productRoutes');
 const mongoose  = require('mongoose');
 require('dotenv').config();
+const cookieParser = require('cookie-parser');
+
 
 app.use(express.json());
+
+app.use(cookieParser());
 
 app.use('/api/products',productRoutes);
 

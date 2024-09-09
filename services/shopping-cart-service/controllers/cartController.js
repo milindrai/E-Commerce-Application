@@ -2,7 +2,12 @@ const Cart = require('../models/Cart');
 
 const addToCart = async (req, res) => {
     try {
-        const { userId, productId, quantity } = req.body;
+        const { userId, productId } = req.body;
+        let quantity = Number(req.body.quantity); // Convert quantity to a number
+        if (isNaN(quantity)) {
+            return res.status(400).send('Quantity must be a number');
+        }
+
         let cart = await Cart.findOne({ userId });
         if (cart) {
             const productIndex = cart.products.findIndex(p => p.productId == productId);
@@ -24,19 +29,39 @@ const addToCart = async (req, res) => {
     }
 };
 
-const getCart = async (req, res) => {
-    try {
-        const cart = await Cart.findOne({ userId: req.params.userId }).populate('products.productId');
-        if (!cart) {
+const goToCart=async(req,res)=>{
+    try{
+        const cart=await Cart.findOne({userId:req.params.userId});
+        if(!cart){
             return res.status(404).send('Cart not found');
         }
         res.status(200).send(cart);
+    }
+    catch(err){
+        res.status(500).send('Server Error');
+    }
+};
+
+const modifyQuantity = async (req, res) => {
+    try {
+        const { userId, productId, quantity } = req.body;
+        let cart = await Cart.findOne({ userId });
+        if (cart) {
+            const productIndex = cart.products.findIndex(p => p.productId == productId);
+            if (productIndex > -1) {
+                let productItem = cart.products[productIndex];
+                productItem.quantity = quantity;
+                cart.products[productIndex] = productItem;
+                cart = await cart.save();
+                return res.status(200).send(cart);
+            }
+        }
+        res.status(404).send('Cart not found');
     } catch (error) {
         res.status(500).send('Server Error');
     }
 };
 
-// Remove product from cart
 const removeFromCart = async (req, res) => {
     try {
         const { userId, productId } = req.body;
@@ -52,7 +77,6 @@ const removeFromCart = async (req, res) => {
     }
 };
 
-// Clear cart
 const clearCart = async (req, res) => {
     try {
         let cart = await Cart.findOne({ userId: req.params.userId });
@@ -67,4 +91,4 @@ const clearCart = async (req, res) => {
     }
 };
 
-module.exports={addToCart,getCart,removeFromCart,clearCart};
+module.exports={addToCart,goToCart,removeFromCart,clearCart,modifyQuantity};

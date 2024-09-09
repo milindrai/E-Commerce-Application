@@ -34,6 +34,4 @@ const cancelOrder = async (req, res) => {
     }
 };
 
-const 
-
 module.exports = { createOrder, getOrders , cancelOrder };

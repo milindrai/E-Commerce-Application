@@ -20,6 +20,20 @@ const getOrders = async (req, res) => {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
-  };
+};
 
-module.exports = { createOrder, getOrders };
+const cancelOrder = async (req, res) => {
+    try {
+      const orderId = req.params.orderId; // Extract orderId from request parameters
+      const order = await Order.findById(orderId);
+      order.status = 'cancelled';
+      await order.save();
+      res.status(200).json(order);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+};
+
+const 
+
+module.exports = { createOrder, getOrders , cancelOrder };

@@ -1,7 +1,7 @@
 const jwt=require('jsonwebtoken');
 
 const authenticate=(req,res,next)=>{
-    const token=res.cookies['token'];
+    const token=req.cookies['token'];
     if(!token){
         return res.status(401).json({msg:'No token provided,authorization denied'});
     }

@@ -1,34 +1,21 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const { v4: uuidv4 } = require('uuid');
+const express=require('express');
+const db=require('./config/db');
+const app=express();
+const paymentGatewayRoutes=require('./routes/paymentGatewayRoutes');
+const mongoose=require('mongoose');
+require('dotenv').config();
+const cookieParser = require('cookie-parser');
 
-const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(cookieParser());
+app.use('/api/payment',paymentGatewayRoutes);
 
-app.post('/process-payment', (req, res) => {
-    const { amount, cardNumber, expiryDate, cvv } = req.body;
+const PORT=process.env.PORT || 8080;
 
-    if (!amount || !cardNumber || !expiryDate || !cvv) {
-        return res.status(400).json({ error: 'Missing required payment details' });
-    }
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(()=>console.log('Database Connected'))
+    .catch((err)=>console.error('Database Connection error',err));
 
-    // Mock processing delay
-    setTimeout(() => {
-        const isSuccess = Math.random() > 0.1; // 90% success rate
-
-        if (isSuccess) {
-            res.json({
-                transactionId: uuidv4(),
-                status: 'success',
-                amount,
-            });
-        } else {
-            res.status(500).json({ error: 'Payment processing failed' });
-        }
-    }, 500); // Simulate a 1-second delay
-});
-
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`Payment gateway running on port ${PORT}`);
-});
+app.listen(PORT,()=>{
+    console.log(`Payment-service is running on ${PORT}`);
+})

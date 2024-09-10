@@ -1,34 +1,47 @@
 const mongoose = require('mongoose');
 const PaymentGateway = require('../models/payment-gateway');
 require('dotenv').config();
+const { transporter } = require('../nodemailer');
 
-// Your UPI ID
+
+
 const myUpiId = process.env.myUpiId;
 
 const processPayment = async (req, res) => {
     try {
-        const { userId, paymentMethod, paymentAmount, userUpiId } = req.body;
+        const { userId, paymentMethod, paymentAmount, userUpiId, email, phoneNumber } = req.body;
+        const objectIdUserId = new mongoose.Types.ObjectId(userId);
 
-        // Convert userId to ObjectId
-        const objectIdUserId = mongoose.Types.ObjectId(userId);
-
-        // Check if payment method is UPI and both UPI IDs are provided
         if (paymentMethod === 'UPI' && myUpiId && userUpiId) {
-            // Simulate sending payment amount to user's UPI ID
             console.log(`Sending payment...`);
             console.log(`Sending ${paymentAmount} to ${userUpiId} from ${myUpiId}`);
-            // Create payment record in the database
             const payment = await PaymentGateway.create({
-                userId: objectIdUserId, // Use the converted ObjectId here
+                userId: objectIdUserId,
                 paymentMethod,
                 paymentAmount,
-                paymentStatus: 'pending', // Assuming the payment is initially pending
+                paymentStatus: 'pending',
                 email,
                 phoneNumber,
             });
            
             console.log('Payment record created:', payment);
-            // Respond with payment details
+
+            // Send an email notification
+            const mailOptions = {
+                from: process.env.youremail,
+                to: email, // Use the email from the payment record
+                subject: 'Payment Processed',
+                text: `Complete your payment of ${paymentAmount} to ${myUpiId} has been processed.`,
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });
+
             res.status(201).json({
                 success: true,
                 message: `Payment of ${paymentAmount} sent to ${userUpiId} from ${myUpiId}`,
@@ -37,8 +50,7 @@ const processPayment = async (req, res) => {
         } else {
             res.status(400).json({ error: 'Invalid payment method or missing UPI ID' });
         }
-    } 
-    catch (error) {
+    } catch (error) {
         console.error('Error details:', error);
         res.status(500).json({ error: 'Failed to process payment' });
     }

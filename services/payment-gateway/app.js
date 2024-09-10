@@ -1,21 +1,22 @@
-const express=require('express');
-const db=require('./config/db');
-const app=express();
-const paymentGatewayRoutes=require('./routes/paymentGatewayRoutes');
-const mongoose=require('mongoose');
 require('dotenv').config();
+const express = require('express');
+const connectDB = require('./config/db');
+const paymentGatewayRoutes = require('./routes/paymentGatewayRoutes');
 const cookieParser = require('cookie-parser');
 
+const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use('/api/payment',paymentGatewayRoutes);
 
-const PORT=process.env.PORT || 8080;
+// Routes
+app.use('/api/payment', paymentGatewayRoutes);
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(()=>console.log('Database Connected'))
-    .catch((err)=>console.error('Database Connection error',err));
+// Connect to Database
+connectDB();
 
-app.listen(PORT,()=>{
-    console.log(`Payment-service is running on ${PORT}`);
-})
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+    console.log(`Payment-gateway-service is running on port ${PORT}`);
+});

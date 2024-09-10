@@ -24,6 +24,14 @@ const paymentGatewaySchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    email: {
+        type: String,
+        required: false,
+    },
+    phoneNumber: {
+        type: String,
+        required: false,
+    }
 });
 
 const PaymentGateway = mongoose.model('PaymentGateway', paymentGatewaySchema);

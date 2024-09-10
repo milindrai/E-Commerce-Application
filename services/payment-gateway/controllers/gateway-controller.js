@@ -23,6 +23,8 @@ const processPayment = async (req, res) => {
                 paymentMethod,
                 paymentAmount,
                 paymentStatus: 'pending', // Assuming the payment is initially pending
+                email,
+                phoneNumber,
             });
            
             console.log('Payment record created:', payment);

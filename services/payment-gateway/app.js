@@ -12,7 +12,7 @@ app.use('/api/payment',paymentGatewayRoutes);
 
 const PORT=process.env.PORT || 8080;
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI)
     .then(()=>console.log('Database Connected'))
     .catch((err)=>console.error('Database Connection error',err));
 

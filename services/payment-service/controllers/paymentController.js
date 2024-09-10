@@ -1,7 +1,7 @@
 const Payment = require('../models/Payment');
 const stripe = require('../config/payment');
 
-exports.processPayment = async (req, res) => {
+const processPayment = async (req, res) => {
     try {
         const { amount, currency, orderId } = req.body;
 
@@ -34,3 +34,5 @@ exports.processPayment = async (req, res) => {
         });
     }
 };
+
+module.exports = { processPayment };

@@ -7,6 +7,6 @@ router.post('/add',authenticate, addToCart);
 router.get('/',authenticate, goToCart);
 router.put('/modify',authenticate, modifyQuantity);
 router.post('/remove',authenticate, removeFromCart);
-router.delete('/clear/:userId',authenticate, clearCart);
+router.delete('/clear',authenticate, clearCart);
 
 module.exports = router;

@@ -3,7 +3,13 @@ const Order = require('../models/Order');
 
 const createOrder = async (req, res) => {
   try{
-    const order = new Order(req.body);
+    const userId = req.user.userId; // Extract userId from request object
+    const order = new Order({
+      userId,
+      items: req.body.items,
+      total: req.body.total,
+      status: 'pending',
+    });
     await order.save();
     res.status(201).json(order);
   }
@@ -14,7 +20,7 @@ const createOrder = async (req, res) => {
 
 const getOrders = async (req, res) => {
     try {
-      const userId = req.params.userId; // Extract userId from request parameters
+      const userId = req.user.userId;                       // Extract userId from request object
       const orders = await Order.find({ userId: userId });
       res.status(200).json(orders);
     } catch (err) {

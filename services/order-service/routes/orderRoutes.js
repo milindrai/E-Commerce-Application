@@ -4,8 +4,8 @@ const router = express.Router();
 const { createOrder, getOrders, cancelOrder } = require('../controllers/orderController');
 const authenticate = require('../middleware/authMiddleware');
 
-router.post('/', createOrder);
-router.get('/myOrders/:userId', getOrders);
-router.delete('/:orderId', cancelOrder);
+router.post('/',authenticate, createOrder);
+router.get('/myOrders',authenticate, getOrders);
+router.delete('/:orderId',authenticate, cancelOrder);
 
 module.exports = router;

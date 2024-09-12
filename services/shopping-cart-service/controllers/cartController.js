@@ -47,7 +47,8 @@ const goToCart=async(req,res)=>{
 
 const modifyQuantity = async (req, res) => {
     try {
-        const { userId, productId, quantity } = req.body;
+        userId = req.user.userId;
+        const { productId, quantity } = req.body;
         let cart = await Cart.findOne({ userId });
         if (cart) {
             const productIndex = cart.products.findIndex(p => p.productId == productId);
@@ -83,7 +84,8 @@ const removeFromCart = async (req, res) => {
 
 const clearCart = async (req, res) => {
     try {
-        let cart = await Cart.findOne({ userId: req.params.userId });
+        userId = req.user.userId;
+        let cart = await Cart.findOne({ userId });
         if (cart) {
             cart.products = [];
             cart = await cart.save();

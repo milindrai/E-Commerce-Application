@@ -5,7 +5,8 @@ require('dotenv').config();
 
 const processPayment = async (req, res) => {
     try {
-        const { userId, paymentMethod, paymentAmount, userUpiId, email } = req.body;
+        const userId = req.user.userId;
+        const {  paymentMethod, paymentAmount, userUpiId, email } = req.body;
         const objectIdUserId = new mongoose.Types.ObjectId(userId);
 
         if (paymentMethod === 'UPI' && process.env.myUpiId && userUpiId) {

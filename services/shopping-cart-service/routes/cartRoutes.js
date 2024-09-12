@@ -4,7 +4,7 @@ const { addToCart, removeFromCart, clearCart, goToCart, modifyQuantity } = requi
 const authenticate = require('../middleware/authenticate');
 
 router.post('/add',authenticate, addToCart);
-router.get('/:userId',authenticate, goToCart);
+router.get('/',authenticate, goToCart);
 router.put('/modify',authenticate, modifyQuantity);
 router.post('/remove',authenticate, removeFromCart);
 router.delete('/clear/:userId',authenticate, clearCart);

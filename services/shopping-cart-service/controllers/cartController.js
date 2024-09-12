@@ -2,7 +2,9 @@ const Cart = require('../models/Cart');
 
 const addToCart = async (req, res) => {
     try {
-        const { userId, productId } = req.body;
+        // Extract userId from req.user instead of req.body
+        const userId = req.user.userId;
+        const { productId } = req.body;
         let quantity = Number(req.body.quantity); // Convert quantity to a number
         if (isNaN(quantity)) {
             return res.status(400).send('Quantity must be a number');
@@ -31,7 +33,8 @@ const addToCart = async (req, res) => {
 
 const goToCart=async(req,res)=>{
     try{
-        const cart=await Cart.findOne({userId:req.params.userId});
+        userId=req.user.userId;
+        const cart=await Cart.findOne({userId});
         if(!cart){
             return res.status(404).send('Cart not found');
         }
@@ -64,7 +67,8 @@ const modifyQuantity = async (req, res) => {
 
 const removeFromCart = async (req, res) => {
     try {
-        const { userId, productId } = req.body;
+        userId = req.user.userId;
+        const { productId } = req.body;
         let cart = await Cart.findOne({ userId });
         if (cart) {
             cart.products = cart.products.filter(p => p.productId != productId);
